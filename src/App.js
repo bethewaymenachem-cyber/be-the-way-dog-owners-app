@@ -3,7 +3,7 @@ import { Crown, Users, User, Star, ChevronLeft, Phone, PlayCircle, ShieldCheck, 
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://yrlkfgjguhvxcenigwob.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_vaq0deuZkoIoGk7jCZ5T5w__s7A-f9A-5989182245';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlybGtmZ2pndWh2eGNlbmlnd29iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNjc2ODEsImV4cCI6MjA4OTc0MzY4MX0.k4ref2MxwJ9gMW2HBZMiE0lB2nmAO-jgrQqcMpqNSfk';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 /// ==========================================
 /// 1. MOCK DATA LAYER (הכנה ל-Database)
