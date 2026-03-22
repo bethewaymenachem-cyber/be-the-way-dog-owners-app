@@ -493,14 +493,23 @@ const CoursePage = () => {
 
   useEffect(() => {
     async function fetchLessons() {
-      // מושך את השיעורים האמיתיים מהטבלה שלך ומסדר אותם
-      const { data } = await supabase
-        .from('lessons')
-        .select('*')
-        .order('lesson_number', { ascending: true });
-      
-      setLessons(data || []);
-      setLoading(false);
+      try {
+        const { data, error } = await supabase
+          .from('lessons')
+          .select('*')
+          .order('lesson_number', { ascending: true });
+        
+        if (error) {
+          console.error("Supabase Error:", error.message);
+          setLessons([]);
+        } else {
+          setLessons(data || []);
+        }
+      } catch (err) {
+        console.error("Fetch Error:", err);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchLessons();
   }, []);
@@ -516,28 +525,29 @@ const CoursePage = () => {
         </button>
         <h2 className="text-3xl font-bold text-white mb-8">רשימת שיעורים</h2>
         <div className="space-y-4">
-          {lessons.map((lesson, idx) => (
-            <div key={lesson.id} className="flex items-center p-5 rounded-2xl border bg-slate-900 border-white/5 hover:border-amber-500/30 transition-all duration-300">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ml-5 bg-slate-800">
-                <span className="font-bold text-white">{lesson.lesson_number || (idx + 1)}</span>
+          {lessons && lessons.length > 0 ? (
+            lessons.map((lesson, idx) => (
+              <div key={lesson.id} className="flex items-center p-5 rounded-2xl border bg-slate-900 border-white/5 hover:border-amber-500/30 transition-all duration-300">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ml-5 bg-slate-800">
+                  <span className="font-bold text-white">{lesson.lesson_number || (idx + 1)}</span>
+                </div>
+                <div className="flex-grow">
+                  <h4 className="text-lg font-bold text-white">{lesson.title}</h4>
+                </div>
+                <div>
+                  <button 
+                    onClick={() => navigate('/lesson', { id: lesson.id })} 
+                    className="bg-amber-500 text-slate-900 font-bold py-2 px-6 rounded-xl flex gap-2 items-center hover:scale-105 transition-transform"
+                  >
+                    <Play className="w-4 h-4 fill-slate-900"/> 
+                    <span>התחל שיעור</span>
+                  </button>
+                </div>
               </div>
-              <div className="flex-grow">
-                <h4 className="text-lg font-bold text-white">{lesson.title}</h4>
-              </div>
-              <div>
-                <button 
-                  onClick={() => navigate('/lesson', { id: lesson.id })} 
-                  className="bg-amber-500 text-slate-900 font-bold py-2 px-6 rounded-xl flex gap-2 items-center hover:scale-105 transition-transform"
-                >
-                  <Play className="w-4 h-4 fill-slate-900"/> 
-                  <span>התחל שיעור</span>
-                </button>
-              </div>
-            </div>
-          ))}
-          {lessons.length === 0 && (
-            <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-white/10">
-              <p className="text-slate-500">עדיין לא הועלו שיעורים... 🐶</p>
+            ))
+          ) : (
+             <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-white/10">
+              <p className="text-slate-500">עדיין לא הועלו שיעורים... או שיש בעיית התחברות. 🐶</p>
             </div>
           )}
         </div>
@@ -545,7 +555,6 @@ const CoursePage = () => {
     </>
   );
 };
-
 // --- Lesson Page (Protected) ---
 const LessonPage = () => {
   const { route, navigate } = useRouter();
